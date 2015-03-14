@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- default theme colors -->
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="primary_light">#C5CAE9</color>
+    <color name="background">#ECECEC</color>
+    <color name="accent">#03A9F4</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
+    <!-- MaterialDrawer DARK colors -->
+    <color name="material_drawer_primary">@color/primary</color>
+    <color name="material_drawer_primary_dark">@color/primary_dark</color>
+    <color name="material_drawer_primary_light">@color/primary_light</color>
+    <color name="material_drawer_accent">@color/accent</color>
+    <color name="material_drawer_background">#303030</color>
+    <!-- Material DEFAULT text / items colors -->
+    <color name="material_drawer_icons">#000</color>
+    <color name="material_drawer_primary_text">#FFF</color>
+    <color name="material_drawer_secondary_text">#DEDEDE</color>
+    <color name="material_drawer_hint_text">#ABABAB</color>
+    <color name="material_drawer_contrast_text">#000</color>
+    <color name="material_drawer_divider">#232323</color>
+    <!-- Material DEFAULT drawer colors -->
+    <color name="material_drawer_selected">#232323</color>
+    <color name="material_drawer_selected_text">@color/accent</color>
+
+    <!-- AboutLibraries DARK colors -->
+    <color name="theme_window_background">#303030</color>
+    <color name="about_libraries_card">#666666</color>
+    <color name="about_libraries_title_openSource">#ffffffff</color>
+    <color name="about_libraries_text_openSource">#DEDEDE</color>
+    <color name="about_libraries_dividerDark_openSource">#303030</color>
+    <color name="about_libraries_dividerLight_openSource">#303030</color>
+</resources>

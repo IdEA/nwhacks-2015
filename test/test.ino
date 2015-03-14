@@ -13,7 +13,7 @@ void setup() {
 	digitalWrite(13, HIGH);
 
 }
-int readHertz = 25;
+int readHertz = 30;
 int putHertz = 5;
 String host = "http://206.12.53.185:12000/";
 String hostR = "http://206.12.53.185:12000/put/";

@@ -3,15 +3,17 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#CCD7A2">
+              android:background="@mipmap/trees">
 
+    <!--android:background="#CCD7A2">-->
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="70dp"
         android:id="@+id/disp_title"
         android:gravity="center"
         android:textSize="40sp"
-        android:text="Towel Tracker"/>
+        android:textColor="@android:color/black"
+        android:text="Track your usage!"/>
 
     <TextView
         android:id="@+id/disp_big"
@@ -62,4 +64,10 @@
         android:textSize="100sp"
         android:text="42"/>
 
+    <LinearLayout
+        android:id="@+id/crouton"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></LinearLayout>
 </LinearLayout>

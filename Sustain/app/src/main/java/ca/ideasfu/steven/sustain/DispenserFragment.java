@@ -20,17 +20,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by steven on 14/03/15.
  */
 public class DispenserFragment extends Fragment {
 	static int FIELD_THRESHOLD = 400;
+	int factnm = 0;
+	String facts[] = {"1+1=2", "3+3=2", "f+f=3"};
+	ViewGroup croutonView;
 	TextView big;
 	StringBuilder builder;
 	CircularArray<String> dataSet;
-	int hertz = 5;
+	int getHerz = 5;
+	int infoIntervalSec = 10;
 	Handler updateHandler;
 	String host = "http://206.12.53.185:12000/get/2";
 	Runnable updateRunnable = new Runnable() {
@@ -46,7 +52,20 @@ public class DispenserFragment extends Fragment {
 
 
 			}).start();
-			updateHandler.postDelayed(updateRunnable, 1000/hertz);
+			updateHandler.postDelayed(updateRunnable, 1000/getHerz);
+		}
+	};
+	Runnable infoRunnable = new Runnable() {
+		@Override
+		public void run() {
+			Utils.uiRun(new Runnable() {
+				@Override
+				public void run() {
+					factnm = ++factnm >= facts.length ? 0 : factnm;
+					Crouton.makeText(getActivity(), facts[factnm], Style.CONFIRM, croutonView).show();
+				}
+			});
+			updateHandler.postDelayed(infoRunnable, 1000 * infoIntervalSec);
 		}
 	};
 
@@ -94,12 +113,20 @@ public class DispenserFragment extends Fragment {
 		}
 	}
 
-	void startRepeatingTask() {
+	void startGetTask() {
 		updateRunnable.run();
 	}
 
-	void stopRepeatingTask() {
+	void stopGetTask() {
 		updateHandler.removeCallbacks(updateRunnable);
+	}
+
+	void startInfoTask() {
+		infoRunnable.run();
+	}
+
+	void stopInfoTask() {
+		updateHandler.removeCallbacks(infoRunnable);
 	}
 
 	@Override
@@ -108,8 +135,9 @@ public class DispenserFragment extends Fragment {
 		debug("onCreate");
 		builder = new StringBuilder();
 		updateHandler = new Handler();
-		dataSet = new CircularArray<>(hertz*10);
-		startRepeatingTask();
+		dataSet = new CircularArray<>(getHerz*10);
+		startGetTask();
+		startInfoTask();
 	}
 
 	@Override
@@ -117,6 +145,7 @@ public class DispenserFragment extends Fragment {
 		debug("onCreateView");
 
 		View view = inflater.inflate(R.layout.dispenser_layout, container, false);
+		croutonView = (ViewGroup)view.findViewById(R.id.crouton);
 		big = (TextView)view.findViewById(R.id.disp_big);
 		return view;
 	}

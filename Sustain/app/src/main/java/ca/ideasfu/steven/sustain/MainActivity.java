@@ -33,8 +33,6 @@ public class MainActivity extends ActionBarActivity {
 	public static final int DRAWER_USER_ID = 20;
 	public static final String DRAWER_USER_TAG = "TAG2";
 
-	public Handler runOnUIThread = new Handler(Looper.getMainLooper());
-
 	private Drawer.Result leftDrawer;
 
 	@Override

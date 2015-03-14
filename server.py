@@ -65,6 +65,9 @@ def formHomePageResponse():
 def formAPIResponse(__resp):
     return __resp.encode('utf-8')
 
+def formACK():
+    return 'x'.encode('utf-8')
+
 print("Server is listening...")
 
 inQ = []
@@ -87,13 +90,14 @@ try:
                 apiType = requestStr[0]
                 apiVal = requestStr[1]
                 if apiType == 'put':
-                    print("PUtting: " + requestStr[1])
-                    inQ.append(requestStr[1])
+                    print("PUtting: " + apiVal)
+                    inQ.append(apiVal)
+                    connectionSocket.send(formACK());
                 elif apiType == 'get':
                     respCSV = ""
                     while len(inQ) > 0:
                         itm = inQ.pop(0)
-                        respCSV += itm + ","
+                        respCSV += itm #+ ","
                         print("Popped: " + itm)
                     connectionSocket.send(formAPIResponse(respCSV))
                     print("Sent: " + respCSV)
@@ -112,6 +116,7 @@ try:
             continue
 
         # skip
+        connectionSocket.close();
         continue
 
         print("Requested file: " + repr(requestedFile))

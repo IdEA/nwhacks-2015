@@ -63,7 +63,11 @@ def formHomePageResponse():
     return (response + html).encode('utf-8')
 
 def formAPIResponse(__resp):
-    return __resp.encode('utf-8')
+    response = ("HTTP/1.1 200 OK\r\n"
+                "Content-Length: " + str(len(__resp)) + "\r\n\r\n")
+                #"Content-Type: application/octet-stream\r\n\r\n")
+    print("Sending API response: " + repr(response + __resp))
+    return (response + __resp).encode('utf-8')
 
 def formACK():
     return 'x'.encode('utf-8')
@@ -100,7 +104,6 @@ try:
                         respCSV += itm #+ ","
                         print("Popped: " + itm)
                     connectionSocket.send(formAPIResponse(respCSV))
-                    print("Sent: " + respCSV)
             # Only handle GET and HEAD request types
             if requestType != 'GET' and requestType != 'HEAD':
                 raise Exception;

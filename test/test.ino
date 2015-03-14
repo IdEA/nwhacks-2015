@@ -4,6 +4,7 @@
 void setup() {
 	pinMode(13, OUTPUT);
 	pinMode(7, INPUT);
+	pinMode(2, OUTPUT);
 
 	digitalWrite(13, LOW);
 	Serial.begin(115200);
@@ -12,7 +13,8 @@ void setup() {
 	digitalWrite(13, HIGH);
 
 }
-
+int readHertz = 25;
+int putHertz = 5;
 String host = "http://206.12.53.185:12000/";
 String hostR = "http://206.12.53.185:12000/put/";
 String buffer = "";
@@ -20,32 +22,21 @@ String buffer = "";
 //int port = 12000;
 int counter = 0;
 void loop() {
+	digitalWrite(13, LOW);
 	counter++;
 	int result = analogRead(A0);
 	Serial.println(result);
-	digitalWrite(13, HIGH);
-	delay(100);
-	digitalWrite(13, LOW);
-	delay(100);
 
 	buffer += String(result) + ',';
-	/*
-	HttpClient client;
-	Serial.println("default get" + host);
-	client.get(host);
-	while (client.available()) {
-		char c = client.read();
-		Serial.print(c);
-	}
-	Serial.flush();
-	*/
 
-	if(counter % 2 == 0) {
+	if(counter % (readHertz / putHertz) == 0) {
+		Serial.println("putHertz tick");
 		counter = 0;
 		if(buffer.length() > 0) {
 			String complete = hostR + buffer;
 
 			Serial.println("Start send: " + complete);
+			digitalWrite(2, HIGH);
 			HttpClient client;
 			client.get(complete);
 			//client.getAsynchronously(host);
@@ -57,7 +48,10 @@ void loop() {
 			buffer = "";
 		}
 	}
-	
-
-	delay(10000);
+	digitalWrite(2, LOW);
+	digitalWrite(13, HIGH);
+	delay(1000/readHertz);
 }
+
+
+

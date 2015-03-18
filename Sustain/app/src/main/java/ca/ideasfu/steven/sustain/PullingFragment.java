@@ -3,6 +3,8 @@ package ca.ideasfu.steven.sustain;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.CircularArray;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,40 +23,97 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
 /**
  * Created by steven on 14/03/15.
  */
-public class DispenserFragment extends Fragment {
-	static int FIELD_THRESHOLD = 400;
-	int factnm = 0;
-	String facts[] = {"1+1=2", "3+3=2", "f+f=3"};
-	ViewGroup croutonView;
-	TextView big;
+public class PullingFragment extends Fragment {
 	StringBuilder builder;
+	int towels = 0;
+	int factnm = 0;
+	boolean pulling = false;
+	String facts[] = {"1+1=2", "3+3=2", "f+f=3"};
+	TextView big, response, response2;
 	CircularArray<String> dataSet;
-	int getHerz = 5;
+	int getHerz = 6;
 	int infoIntervalSec = 10;
 	Handler updateHandler;
-	String host = "http://206.12.53.185:12000/get/2";
-	Runnable updateRunnable = new Runnable() {
+	Handler fragHandler;
+	//String host = "http://206.12.53.185:12000/get/2";
+	String host = "http://128.189.236.224:12000/get/2";
+	boolean inAnInterval = false;
+	Runnable towelIntervalRunnable = new Runnable() {
+		@Override
+		public void run() {
+			debug("wtf?: towelinterv" );
+			towels = 0;
+			inAnInterval = false;
+			uiUpdateBigText();
+			fragHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					changeToIdleFragment();
+				}
+			}, Utils.FRAGMENT_DELAY);
+		}
+	};
+
+	void changeToIdleFragment() {
+		updateHandler.removeCallbacks(updateRunnable);
+		updateHandler.removeCallbacks(towelIntervalRunnable);
+		fragHandler.removeCallbacks(towelIntervalRunnable);
+		debug("wtf?: " + "removed updatehandle from pullingfrag");
+		getFragmentManager().beginTransaction()
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.fragment_container, new IdleFragment(), MainActivity.DRAWER_DISPENSER_TAG)
+				.commit();
+	}
+
+	public Runnable updateRunnable = new Runnable() {
 		@Override
 		public void run() {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					if(!inAnInterval) {
+						inAnInterval = true;
+						fragHandler.postDelayed(towelIntervalRunnable, 3000);
+						debug("wtf? initial");
+					} else {
+						fragHandler.removeCallbacks(towelIntervalRunnable);
+						fragHandler.postDelayed(towelIntervalRunnable, 3000);
+					}
 					connect(host);
-					grunt();
-					doAnalysis();
+					for(String s : builder.toString().split(",")) {
+						debug("s: " + s);
+						if(s.length() > 0 && dataSet != null) {
+							dataSet.addLast(s);
+						}
+					}
+					builder.setLength(0);
+
+					while(!dataSet.isEmpty()) {
+						String popped = dataSet.popFirst();
+						debug("wtf?: not empty" );
+						if(popped == null)
+							continue;
+						debug("wtf: cont" + popped + " towels" + inAnInterval);
+						towels++;
+						if(!inAnInterval) {
+							inAnInterval = true;
+							fragHandler.postDelayed(towelIntervalRunnable, 3000);
+						} else {
+							debug("in the else");
+							fragHandler.removeCallbacks(towelIntervalRunnable);
+							fragHandler.postDelayed(towelIntervalRunnable, 3000);
+						}
+						uiUpdateBigText();
+					}
 				}
-
-
 			}).start();
 			updateHandler.postDelayed(updateRunnable, 1000/getHerz);
 		}
 	};
+
 	Runnable infoRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -62,71 +121,24 @@ public class DispenserFragment extends Fragment {
 				@Override
 				public void run() {
 					factnm = ++factnm >= facts.length ? 0 : factnm;
-					Crouton.makeText(getActivity(), facts[factnm], Style.CONFIRM, croutonView).show();
+					//Crouton.makeText(getActivity(), facts[factnm], Style.CONFIRM, croutonView).show();
 				}
 			});
 			updateHandler.postDelayed(infoRunnable, 1000 * infoIntervalSec);
 		}
 	};
 
-	void grunt() {
-		for(String s : builder.toString().split(",")) {
-			debug("s: " + s);
-			if(s.length() > 0) {
-				dataSet.addLast(s);
+	void uiUpdateBigText() {
+		Utils.uiRun(new Runnable() {
+			@Override
+			public void run() {
+				big.setText(String.valueOf(towels));
+				int calc = (40000 * towels * 3)/800*25;
+				response.setText("Cost UBC $" + String.valueOf(calc) + " per day");
+				int carbon = (int)(towels*40000*3*3.75*7.75/2/1000);
+				response2.setText("Contribute " + String.valueOf(carbon) + " kilograms of carbon");
 			}
-			builder.setLength(0);
-		}
-	}
-	boolean prevAnalWasCandidate = false;
-	int towels = 0;
-	void doAnalysis() {
-		int count = 0;
-		int thrown = 0;
-		int candidates = 0;
-		while(!dataSet.isEmpty()) {
-			count++;
-			String popped = dataSet.popFirst();
-			if(popped == null)
-				continue;
-			int pval = Integer.valueOf(popped);
-			debug("k: " + popped);
-			if(pval >= FIELD_THRESHOLD) {
-				// throw it out
-				thrown++;
-				if(prevAnalWasCandidate) {
-					prevAnalWasCandidate = false;
-					towels++;
-					Utils.uiRun(new Runnable() {
-						@Override
-						public void run() {
-							big.setText(String.valueOf(towels));
-						}
-					});
-					debug("towels: " + towels);
-				}
-			} else {
-				// candidate
-				candidates++;
-				prevAnalWasCandidate = true;
-			}
-		}
-	}
-
-	void startGetTask() {
-		updateRunnable.run();
-	}
-
-	void stopGetTask() {
-		updateHandler.removeCallbacks(updateRunnable);
-	}
-
-	void startInfoTask() {
-		infoRunnable.run();
-	}
-
-	void stopInfoTask() {
-		updateHandler.removeCallbacks(infoRunnable);
+		});
 	}
 
 	@Override
@@ -135,18 +147,21 @@ public class DispenserFragment extends Fragment {
 		debug("onCreate");
 		builder = new StringBuilder();
 		updateHandler = new Handler();
-		dataSet = new CircularArray<>(getHerz*10);
-		startGetTask();
-		startInfoTask();
+		fragHandler = new Handler();
+		dataSet = new CircularArray<>(getHerz*2);
+		dataSet.addFirst("0");
+		updateRunnable.run();
+		infoRunnable.run();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		debug("onCreateView");
 
-		View view = inflater.inflate(R.layout.dispenser_layout, container, false);
-		croutonView = (ViewGroup)view.findViewById(R.id.crouton);
-		big = (TextView)view.findViewById(R.id.disp_big);
+		View view = inflater.inflate(R.layout.dispenser_pulling_layout, container, false);
+		big = (TextView)view.findViewById(R.id.pulling_bigtxt);
+		response = (TextView)view.findViewById(R.id.pulling_response);
+		response2= (TextView)view.findViewById(R.id.pulling_response2);
 		return view;
 	}
 
@@ -176,13 +191,10 @@ public class DispenserFragment extends Fragment {
 				String result = convertStreamToString(instream).replace("\n", "");
 				if(result.length() > 0) {
 					builder.append(result);
-					debug("builder: " + builder.toString());
 				}
-				debug("res: " + result);
 				// now you have the string representation of the HTML request
 				instream.close();
 			}
-
 
 		} catch (Exception e) {
 			debug("something bad happened: " + e.toString());

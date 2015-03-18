@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/disp_title"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="35sp"
+        android:text="Track your towel waste!"/>
+
+    <TextView
+        android:id="@+id/disp_info"
+        android:layout_marginTop="50dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="40sp"
+        android:text="Just one towel is enough to dry your hands"/>
+
+    <TextView
+        android:id="@+id/disp_info1"
+        android:layout_marginTop="50dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textStyle="italic|bold"
+        android:textSize="70sp"
+        android:text="Try it!"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:paddingTop="30dp"
+        android:paddingBottom="20dp"
+        android:textSize="30sp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Towel Usage Statistics"
+        />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:text="18K tons paper towels are used per day, which means 32K trees are destroyed daily"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:text="17 trees are cut down and 20K gallons of water is used to make one ton of of paper towels"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/disp_mid"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:text="2410\nSFU usage"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/disp_right"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:text="3429\nUBC usage"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+</LinearLayout>

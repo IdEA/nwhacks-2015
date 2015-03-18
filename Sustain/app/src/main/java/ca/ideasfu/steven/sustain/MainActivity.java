@@ -1,13 +1,9 @@
 package ca.ideasfu.steven.sustain;
 
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
 		hideSystemUI(getWindow().getDecorView());
 		setContentView(R.layout.activity_main);
 		keepScreenOn();
-		switchToDispenserFragment(getSupportFragmentManager().beginTransaction());
+		switchToIdleFragment(getSupportFragmentManager().beginTransaction());
 
 		leftDrawer = new Drawer()
 				.withActivity(this)
@@ -58,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
 						FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
 						switch (drawerItem.getIdentifier()) {
 							case DRAWER_DISPENSER_ID: {
-								switchToDispenserFragment(fragTrans);
+								switchToIdleFragment(fragTrans);
 								break;
 							}
 							case DRAWER_USER_ID: {
@@ -113,15 +109,31 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 
-	public void switchToDispenserFragment(FragmentTransaction fragTrans) {
-		final DispenserFragment fragment = new DispenserFragment();
-		fragTrans.replace(R.id.fragment_container, fragment, DRAWER_DISPENSER_TAG)
+	public void switchToPullingFragment() {
+		PullingFragment fragment = new PullingFragment();
+		getSupportFragmentManager().beginTransaction()
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.fragment_container, fragment)
+				.commit();
+	}
+	public void switchToIdleFragment() {
+		IdleFragment fragment = new IdleFragment();
+		getSupportFragmentManager().beginTransaction()
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.fragment_container, fragment)
+				.commit();
+	}
+
+	public void switchToIdleFragment(FragmentTransaction fragTrans) {
+		final IdleFragment fragment = new IdleFragment();
+		fragTrans
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.fragment_container, fragment, DRAWER_DISPENSER_TAG)
 				.commit();
 	}
 
 	public void switchToUserFragment(FragmentTransaction fragTrans) {
-		final DispenserFragment fragment = new DispenserFragment();
+		final PullingFragment fragment = new PullingFragment();
 		fragTrans.replace(R.id.fragment_container, fragment, DRAWER_USER_TAG)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 				.commit();
@@ -148,5 +160,8 @@ public class MainActivity extends ActionBarActivity {
 	}
 	private void keepScreenOn() {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+	public interface FragmentInterface {
+		void frag();
 	}
 }
